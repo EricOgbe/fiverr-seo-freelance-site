@@ -12,3 +12,83 @@
     display: none;
   }
 }
+
+
+/* Compact, premium profile portrait */
+.portrait-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 280px;
+  margin: 0 auto;
+  padding: 0 0 18px 12px;
+}
+
+.portrait-frame {
+  position: relative;
+  padding: 7px;
+  border-radius: 20px;
+  background: linear-gradient(
+    145deg,
+    rgba(197, 243, 107, 0.7),
+    rgba(140, 229, 210, 0.2) 45%,
+    rgba(255, 255, 255, 0.08)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  transform: rotate(-2deg);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+  overflow: hidden;
+}
+
+.portrait-frame img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: center 25%;
+  border-radius: 14px;
+  filter: saturate(0.95);
+}
+
+.portrait-caption {
+  position: absolute;
+  z-index: 2;
+  bottom: 0;
+  left: 0;
+  right: -8px;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 13px;
+  background: #f7fafb;
+  color: #253147;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 11px;
+  font-size: 10px;
+  line-height: 1.4;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.caption-dot {
+  flex: 0 0 7px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #79a83b;
+  box-shadow: 0 0 0 4px rgba(121, 168, 59, 0.13);
+}
+
+/* Keep the portrait compact on tablets */
+@media (min-width: 701px) and (max-width: 900px) {
+  .portrait-wrap {
+    max-width: 240px;
+  }
+}
+
+/* Hide portrait on mobile, as in your current design */
+@media (max-width: 700px) {
+  .portrait-wrap {
+    display: none;
+  }
+}
+
