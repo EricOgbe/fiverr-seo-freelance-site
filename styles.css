@@ -11,6 +11,9 @@
   .portrait-wrap {
     display: none;
   }
+  .dashboard-card{
+    display: none;
+  }
 }
 
 
