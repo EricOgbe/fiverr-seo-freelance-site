@@ -114,6 +114,7 @@
       const totalDone = category.checks.filter((_, i) => statusOf(`${category.id}-${i + 1}`) !== 'unchecked').length;
       const details = document.createElement('details');
       details.className = 'category';
+      details.dataset.category = category.id;
       details.open = Boolean(query || filter !== 'all') || categoryIndex === 0;
       const summary = document.createElement('summary');
       summary.className = 'category-head';
@@ -201,9 +202,46 @@
   statusFilter.addEventListener('change', render);
 
   function printReport() {
-    // Expand categories so the print/PDF report includes the complete audit.
+    // Always print all 50 checks, regardless of active search/status filters.
+    const previousQuery = searchInput.value;
+    const previousFilter = statusFilter.value;
+    const previousOpenCategories = new Set(
+      Array.from(document.querySelectorAll('.category[open]')).map(category => category.dataset.category)
+    );
+    const previousOpenHelp = new Set(
+      Array.from(document.querySelectorAll('.how-toggle[aria-expanded="true"]')).map(button => button.getAttribute('aria-controls'))
+    );
+
+    searchInput.value = '';
+    statusFilter.value = 'all';
+    render();
     document.querySelectorAll('.category').forEach(category => { category.open = true; });
     document.querySelectorAll('.check-help').forEach(panel => { panel.hidden = false; });
+    document.querySelectorAll('.how-toggle').forEach(button => {
+      button.setAttribute('aria-expanded', 'true');
+      button.textContent = 'Hide guidance';
+    });
+
+    const restoreAfterPrint = () => {
+      searchInput.value = previousQuery;
+      statusFilter.value = previousFilter;
+      render();
+      document.querySelectorAll('.category').forEach(category => {
+        category.open = previousOpenCategories.has(category.dataset.category);
+      });
+      previousOpenHelp.forEach(id => {
+        const button = document.querySelector(`.how-toggle[aria-controls="${id}"]`);
+        const panel = document.getElementById(id);
+        if (button && panel) {
+          button.setAttribute('aria-expanded', 'true');
+          button.textContent = 'Hide guidance';
+          panel.hidden = false;
+        }
+      });
+      window.removeEventListener('afterprint', restoreAfterPrint);
+    };
+
+    window.addEventListener('afterprint', restoreAfterPrint);
     window.print();
   }
 
@@ -222,10 +260,11 @@
   const toggle = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.nav-links');
   if (toggle && nav) {
-    const closeMenu = () => { nav.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); };
+    const closeMenu = () => { nav.classList.remove('open'); toggle.setAttribute('aria-expanded', 'false'); toggle.setAttribute('aria-label', 'Open navigation'); };
     toggle.addEventListener('click', () => {
       const open = toggle.getAttribute('aria-expanded') === 'true';
       toggle.setAttribute('aria-expanded', String(!open));
+      toggle.setAttribute('aria-label', open ? 'Open navigation' : 'Close navigation');
       nav.classList.toggle('open', !open);
     });
     nav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMenu));
